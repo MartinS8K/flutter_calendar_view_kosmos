@@ -184,3 +184,23 @@ extension MyList on List<CalendarEventData> {
     }
   }
 }
+
+
+extension intPlus on int? {
+  int? addIsNonNull(int value) {
+    if (this == null) {
+      return this;
+    } else {
+      return this! + value;
+    }
+  }
+
+  int? subIsNonNull(int value) {
+    if (this == null) {
+      return this;
+    } else {
+      return this! - value;
+    }
+  }
+}
+

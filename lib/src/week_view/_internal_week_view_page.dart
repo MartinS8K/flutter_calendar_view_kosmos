@@ -170,7 +170,8 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
       required this.showWeekDayAtBottom,
       required this.showHalfHours,
       required this.showQuarterHours,
-      required this.emulateVerticalOffsetBy})
+      required this.emulateVerticalOffsetBy,
+      })
       : super(key: key);
 
   @override
@@ -180,8 +181,7 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
       height: height + weekTitleHeight,
       width: width,
       child: Column(
-        verticalDirection:
-            showWeekDayAtBottom ? VerticalDirection.up : VerticalDirection.down,
+        verticalDirection: showWeekDayAtBottom ? VerticalDirection.up : VerticalDirection.down,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           SizedBox(
@@ -220,8 +220,7 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
                 ...List.generate(
                   filteredDates.length,
                   (index) {
-                    final fullDayEventList =
-                        controller.getFullDayEvent(filteredDates[index]);
+                    final fullDayEventList = controller.getFullDayEvent(filteredDates[index]);
                     return fullDayEventList.isEmpty
                         ? SizedBox.shrink()
                         : SizedBox(
@@ -265,13 +264,11 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
                         painter: HalfHourLinePainter(
                           lineColor: halfHourIndicatorSettings.color,
                           lineHeight: halfHourIndicatorSettings.height,
-                          offset:
-                              timeLineWidth + halfHourIndicatorSettings.offset,
+                          offset: timeLineWidth + halfHourIndicatorSettings.offset,
                           minuteHeight: heightPerMinute,
                           lineStyle: halfHourIndicatorSettings.lineStyle,
                           dashWidth: halfHourIndicatorSettings.dashWidth,
-                          dashSpaceWidth:
-                              halfHourIndicatorSettings.dashSpaceWidth,
+                          dashSpaceWidth: halfHourIndicatorSettings.dashSpaceWidth,
                         ),
                       ),
                     if (showQuarterHours)
@@ -280,13 +277,11 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
                         painter: QuarterHourLinePainter(
                           lineColor: quarterHourIndicatorSettings.color,
                           lineHeight: quarterHourIndicatorSettings.height,
-                          offset: timeLineWidth +
-                              quarterHourIndicatorSettings.offset,
+                          offset: timeLineWidth + quarterHourIndicatorSettings.offset,
                           minuteHeight: heightPerMinute,
                           lineStyle: quarterHourIndicatorSettings.lineStyle,
                           dashWidth: quarterHourIndicatorSettings.dashWidth,
-                          dashSpaceWidth:
-                              quarterHourIndicatorSettings.dashSpaceWidth,
+                          dashSpaceWidth: quarterHourIndicatorSettings.dashSpaceWidth,
                         ),
                       ),
                     if (showLiveLine && liveTimeIndicatorSettings.height > 0)
@@ -336,9 +331,9 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
                                       eventArranger: eventArranger,
                                       eventTileBuilder: eventTileBuilder,
                                       scrollNotifier: scrollConfiguration,
-                                      events: controller
-                                          .getEventsOnDay(filteredDates[index]),
+                                      events: controller.getEventsOnDay(filteredDates[index]),
                                       heightPerMinute: heightPerMinute,
+                                      minMax: MinMax(),
                                     ),
                                   ],
                                 ),
@@ -356,6 +351,7 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
                       timeLineBuilder: timeLineBuilder,
                       showHalfHours: showHalfHours,
                       showQuarterHours: showQuarterHours,
+                      minMax: MinMax(),
                     ),
                   ],
                 ),

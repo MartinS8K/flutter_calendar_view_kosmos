@@ -35,6 +35,9 @@ class LiveTimeIndicator extends StatefulWidget {
   /// Defines height occupied by one minute.
   final double heightPerMinute;
 
+  /// Defines the minimum Hour time display in day view.
+  final int? minTime;
+
   /// Widget to display tile line according to current time.
   const LiveTimeIndicator(
       {Key? key,
@@ -42,6 +45,7 @@ class LiveTimeIndicator extends StatefulWidget {
       required this.height,
       required this.timeLineWidth,
       required this.liveTimeIndicatorSettings,
+      this.minTime,
       required this.heightPerMinute})
       : super(key: key);
 
@@ -88,7 +92,7 @@ class _LiveTimeIndicatorState extends State<LiveTimeIndicator> {
         height: widget.liveTimeIndicatorSettings.height,
         offset: Offset(
           widget.timeLineWidth + widget.liveTimeIndicatorSettings.offset,
-          _currentDate.getTotalMinutes * widget.heightPerMinute,
+          (_currentDate.getTotalMinutes - ((widget.minTime ?? 0) * 60)) * widget.heightPerMinute,
         ),
       ),
     );
@@ -122,6 +126,9 @@ class TimeLine extends StatelessWidget {
 
   double get _halfHourHeight => hourHeight / 2;
 
+  /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
+  final MinMax minMax;
+
   /// Time line to display time at left side of day or week view.
   const TimeLine({
     Key? key,
@@ -130,6 +137,7 @@ class TimeLine extends StatelessWidget {
     required this.height,
     required this.timeLineOffset,
     required this.timeLineBuilder,
+    required this.minMax,
     this.showHalfHours = false,
     this.showQuarterHours = false,
   }) : super(key: key);
@@ -146,39 +154,40 @@ class TimeLine extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          for (int i = 1; i < Constants.hoursADay; i++)
+          for (int i = minMax.min ?? 1; i < (minMax.max.addIsNonNull(1) ?? Constants.hoursADay); i++)
             _timelinePositioned(
-              topPosition: hourHeight * i - timeLineOffset,
+              topPosition: hourHeight * (i - (minMax.min ?? 0)) - timeLineOffset + minMax.ajustementContainerSize / 2,
               bottomPosition: height - (hourHeight * (i + 1)) + timeLineOffset,
               hour: i,
             ),
           if (showHalfHours)
-            for (int i = 0; i < Constants.hoursADay; i++)
+            for (int i = minMax.min ?? 0; i < (minMax.max ?? Constants.hoursADay); i++)
               _timelinePositioned(
-                topPosition: hourHeight * i - timeLineOffset + _halfHourHeight,
-                bottomPosition:
-                    height - (hourHeight * (i + 1)) + timeLineOffset,
+                topPosition: hourHeight * (i - (minMax.min ?? 0)) -
+                    timeLineOffset +
+                    _halfHourHeight +
+                    minMax.ajustementContainerSize / 2,
+                bottomPosition: height - (hourHeight * (i + 1)) + timeLineOffset,
                 hour: i,
                 minutes: 30,
               ),
           if (showQuarterHours)
-            for (int i = 0; i < Constants.hoursADay; i++) ...[
+            for (int i = minMax.min ?? 0; i < (minMax.max ?? Constants.hoursADay); i++) ...[
               /// this is for 15 minutes
               _timelinePositioned(
-                topPosition:
-                    hourHeight * i - timeLineOffset + hourHeight * 0.25,
-                bottomPosition:
-                    height - (hourHeight * (i + 1)) + timeLineOffset,
+                topPosition: hourHeight * (i - (minMax.min ?? 0)) -
+                    timeLineOffset +
+                    hourHeight * 0.25 +
+                    minMax.ajustementContainerSize / 2,
+                bottomPosition: height - (hourHeight * (i + 1)) + timeLineOffset,
                 hour: i,
                 minutes: 15,
               ),
 
               /// this is for 45 minutes
               _timelinePositioned(
-                topPosition:
-                    hourHeight * i - timeLineOffset + hourHeight * 0.75,
-                bottomPosition:
-                    height - (hourHeight * (i + 1)) + timeLineOffset,
+                topPosition: hourHeight * i - timeLineOffset + hourHeight * 0.75 + minMax.ajustementContainerSize / 2,
+                bottomPosition: height - (hourHeight * (i + 1)) + timeLineOffset,
                 hour: i,
                 minutes: 45,
               ),
@@ -244,6 +253,9 @@ class EventGenerator<T extends Object?> extends StatelessWidget {
 
   final EventScrollConfiguration scrollNotifier;
 
+  /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
+  final MinMax minMax;
+
   /// A widget that display event tiles in day/week view.
   const EventGenerator({
     Key? key,
@@ -256,6 +268,7 @@ class EventGenerator<T extends Object?> extends StatelessWidget {
     required this.date,
     required this.onTileTap,
     required this.scrollNotifier,
+    required this.minMax,
   }) : super(key: key);
 
   /// Arrange events and returns list of [Widget] that displays event
@@ -271,26 +284,21 @@ class EventGenerator<T extends Object?> extends StatelessWidget {
 
     return List.generate(events.length, (index) {
       return Positioned(
-        top: events[index].top,
-        bottom: events[index].bottom,
+        top: events[index].top - (((minMax.min ?? 0) * 60) * heightPerMinute) + (minMax.ajustementContainerSize / 2),
+        bottom:
+            events[index].bottom + (((minMax.min ?? 0) * 60) * heightPerMinute) - (minMax.ajustementContainerSize / 2),
         left: events[index].left,
         right: events[index].right,
         child: GestureDetector(
           onTap: () => onTileTap?.call(events[index].events, date),
           child: Builder(builder: (context) {
-            if (scrollNotifier.shouldScroll &&
-                events[index]
-                    .events
-                    .any((element) => element == scrollNotifier.event)) {
+            if (scrollNotifier.shouldScroll && events[index].events.any((element) => element == scrollNotifier.event)) {
               _scrollToEvent(context);
             }
             return eventTileBuilder(
               date,
               events[index].events,
-              Rect.fromLTWH(
-                  events[index].left,
-                  events[index].top,
-                  width - events[index].right - events[index].left,
+              Rect.fromLTWH(events[index].left, events[index].top, width - events[index].right - events[index].left,
                   height - events[index].bottom - events[index].top),
               events[index].startDuration,
               events[index].endDuration,
@@ -363,6 +371,8 @@ class PressDetector extends StatelessWidget {
   /// where events are not available.
   final MinuteSlotSize minuteSlotSize;
 
+  final double maxTime;
+
   /// A widget that display event tiles in day/week view.
   const PressDetector({
     Key? key,
@@ -373,12 +383,13 @@ class PressDetector extends StatelessWidget {
     required this.onDateLongPress,
     required this.onDateTap,
     required this.minuteSlotSize,
+    required this.maxTime,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final heightPerSlot = minuteSlotSize.minutes * heightPerMinute;
-    final slots = (Constants.hoursADay * 60) ~/ minuteSlotSize.minutes;
+    final slots = (maxTime * 60) ~/ minuteSlotSize.minutes;
 
     return Container(
       height: height,

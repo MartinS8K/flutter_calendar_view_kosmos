@@ -3,9 +3,9 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-
 import 'constants.dart';
 import 'enumerations.dart';
+import 'extensions.dart';
 
 /// Paints 24 hour lines.
 class HourLinePainter extends CustomPainter {
@@ -39,6 +39,9 @@ class HourLinePainter extends CustomPainter {
   /// Emulates offset of vertical line from hour line starts.
   final double emulateVerticalOffsetBy;
 
+  /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
+  final MinMax minMax;
+
   /// Paints 24 hour lines.
   HourLinePainter({
     required this.lineColor,
@@ -47,6 +50,7 @@ class HourLinePainter extends CustomPainter {
     required this.offset,
     required this.showVerticalLine,
     required this.emulateVerticalOffsetBy,
+    this.minMax = const MinMax(),
     this.verticalLineOffset = 10,
     this.lineStyle = LineStyle.solid,
     this.dashWidth = 4,
@@ -60,13 +64,12 @@ class HourLinePainter extends CustomPainter {
       ..color = lineColor
       ..strokeWidth = lineHeight;
 
-    for (var i = 1; i < Constants.hoursADay; i++) {
-      final dy = i * minuteHeight * 60;
+    for (var i = 1 + (minMax.min ?? 0); i < (minMax.max.addIsNonNull(1) ?? Constants.hoursADay); i++) {
+      final dy = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minMax.ajustementContainerSize / 2);
       if (lineStyle == LineStyle.dashed) {
         var startX = dx;
         while (startX < size.width) {
-          canvas.drawLine(
-              Offset(startX, dy), Offset(startX + dashWidth, dy), paint);
+          canvas.drawLine(Offset(startX, dy), Offset(startX + dashWidth, dy), paint);
           startX += dashWidth + dashSpaceWidth;
         }
       } else {
@@ -82,8 +85,7 @@ class HourLinePainter extends CustomPainter {
         startY += dashWidth + dashSpaceWidth;
       }
     } else {
-      canvas.drawLine(Offset(offset + verticalLineOffset, 0),
-          Offset(offset + verticalLineOffset, size.height), paint);
+      canvas.drawLine(Offset(offset + verticalLineOffset, 0), Offset(offset + verticalLineOffset, size.height), paint);
     }
   }
 
@@ -120,6 +122,9 @@ class HalfHourLinePainter extends CustomPainter {
   /// Line dash space width when using the [LineStyle.dashed] style
   final double dashSpaceWidth;
 
+    /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
+  final MinMax minMax;
+
   /// Paint half hour lines
   HalfHourLinePainter({
     required this.lineColor,
@@ -127,6 +132,7 @@ class HalfHourLinePainter extends CustomPainter {
     required this.offset,
     required this.minuteHeight,
     required this.lineStyle,
+    this.minMax = const MinMax(),
     this.dashWidth = 4,
     this.dashSpaceWidth = 4,
   });
@@ -137,13 +143,12 @@ class HalfHourLinePainter extends CustomPainter {
       ..color = lineColor
       ..strokeWidth = lineHeight;
 
-    for (var i = 0; i < Constants.hoursADay; i++) {
-      final dy = i * minuteHeight * 60 + (minuteHeight * 30);
+    for (var i = 0 + (minMax.min ?? 0); i < (minMax.max ?? Constants.hoursADay); i++) {
+      final dy = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minuteHeight * 30) + (minMax.ajustementContainerSize / 2);
       if (lineStyle == LineStyle.dashed) {
         var startX = offset;
         while (startX < size.width) {
-          canvas.drawLine(
-              Offset(startX, dy), Offset(startX + dashWidth, dy), paint);
+          canvas.drawLine(Offset(startX, dy), Offset(startX + dashWidth, dy), paint);
           startX += dashWidth + dashSpaceWidth;
         }
       } else {
@@ -185,6 +190,9 @@ class QuarterHourLinePainter extends CustomPainter {
   /// Line dash space width when using the [LineStyle.dashed] style
   final double dashSpaceWidth;
 
+  /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
+  final MinMax minMax;
+
   /// Paint quarter hour lines
   QuarterHourLinePainter({
     required this.lineColor,
@@ -192,6 +200,7 @@ class QuarterHourLinePainter extends CustomPainter {
     required this.offset,
     required this.minuteHeight,
     required this.lineStyle,
+    this.minMax = const MinMax(),
     this.dashWidth = 4,
     this.dashSpaceWidth = 4,
   });
@@ -202,19 +211,17 @@ class QuarterHourLinePainter extends CustomPainter {
       ..color = lineColor
       ..strokeWidth = lineHeight;
 
-    for (var i = 0; i < Constants.hoursADay; i++) {
-      final dy1 = i * minuteHeight * 60 + (minuteHeight * 15);
-      final dy2 = i * minuteHeight * 60 + (minuteHeight * 45);
+    for (var i = 0 + (minMax.min ?? 0); i < (minMax.max ?? Constants.hoursADay); i++) {
+      final dy1 = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minuteHeight * 15);
+      final dy2 = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minuteHeight * 45);
 
       if (lineStyle == LineStyle.dashed) {
         var startX = offset;
         while (startX < size.width) {
-          canvas.drawLine(
-              Offset(startX, dy1), Offset(startX + dashWidth, dy1), paint);
+          canvas.drawLine(Offset(startX, dy1), Offset(startX + dashWidth, dy1), paint);
           startX += dashWidth + dashSpaceWidth;
 
-          canvas.drawLine(
-              Offset(startX, dy2), Offset(startX + dashWidth, dy2), paint);
+          canvas.drawLine(Offset(startX, dy2), Offset(startX + dashWidth, dy2), paint);
           startX += dashWidth + dashSpaceWidth;
         }
       } else {
@@ -270,15 +277,19 @@ class CurrentTimeLinePainter extends CustomPainter {
         ..strokeWidth = height,
     );
 
-    if (showBullet)
-      canvas.drawCircle(
-          Offset(offset.dx, offset.dy), bulletRadius, Paint()..color = color);
+    if (showBullet) canvas.drawCircle(Offset(offset.dx, offset.dy), bulletRadius, Paint()..color = color);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) =>
       oldDelegate is CurrentTimeLinePainter &&
-      (color != oldDelegate.color ||
-          height != oldDelegate.height ||
-          offset != oldDelegate.offset);
+      (color != oldDelegate.color || height != oldDelegate.height || offset != oldDelegate.offset);
+}
+
+class MinMax {
+  final int? min;
+  final int? max;
+  final int ajustementContainerSize;
+
+  const MinMax({this.min, this.max, this.ajustementContainerSize = 20});
 }

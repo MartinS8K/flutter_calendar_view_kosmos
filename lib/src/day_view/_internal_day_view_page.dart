@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
+
+
 import 'package:flutter/material.dart';
 
 import '../components/_internal_components.dart';
@@ -112,6 +114,9 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
   /// Emulate vertical line offset from hour line starts.
   final double emulateVerticalOffsetBy;
 
+  /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
+  final MinMax minMax;
+
   /// Defines a single day page.
   const InternalDayViewPage({
     Key? key,
@@ -145,24 +150,21 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
     required this.halfHourIndicatorSettings,
     required this.quarterHourIndicatorSettings,
     required this.emulateVerticalOffsetBy,
+    required this.minMax,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final fullDayEventList = controller.getFullDayEvent(date);
     return Container(
-      height: height,
       width: width,
       child: Column(
         children: [
-          fullDayEventList.isEmpty
-              ? SizedBox.shrink()
-              : fullDayEventBuilder(fullDayEventList, date),
+          fullDayEventList.isEmpty ? SizedBox.shrink() : fullDayEventBuilder(fullDayEventList, date),
           Expanded(
             child: SingleChildScrollView(
               controller: scrollController,
-              child: SizedBox(
-                height: height,
+              child: Container(
                 width: width,
                 child: Stack(
                   children: [
@@ -187,13 +189,12 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         painter: HalfHourLinePainter(
                           lineColor: halfHourIndicatorSettings.color,
                           lineHeight: halfHourIndicatorSettings.height,
-                          offset:
-                              timeLineWidth + halfHourIndicatorSettings.offset,
+                          offset: timeLineWidth + halfHourIndicatorSettings.offset,
                           minuteHeight: heightPerMinute,
                           lineStyle: halfHourIndicatorSettings.lineStyle,
                           dashWidth: halfHourIndicatorSettings.dashWidth,
-                          dashSpaceWidth:
-                              halfHourIndicatorSettings.dashSpaceWidth,
+                          dashSpaceWidth: halfHourIndicatorSettings.dashSpaceWidth,
+                          minMax: minMax
                         ),
                       ),
                     if (showQuarterHours)
@@ -202,13 +203,12 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         painter: QuarterHourLinePainter(
                           lineColor: quarterHourIndicatorSettings.color,
                           lineHeight: quarterHourIndicatorSettings.height,
-                          offset: timeLineWidth +
-                              quarterHourIndicatorSettings.offset,
+                          offset: timeLineWidth + quarterHourIndicatorSettings.offset,
                           minuteHeight: heightPerMinute,
                           lineStyle: quarterHourIndicatorSettings.lineStyle,
                           dashWidth: quarterHourIndicatorSettings.dashWidth,
-                          dashSpaceWidth:
-                              quarterHourIndicatorSettings.dashSpaceWidth,
+                          dashSpaceWidth: quarterHourIndicatorSettings.dashSpaceWidth,
+                          minMax: minMax
                         ),
                       ),
                     dayDetectorBuilder(
@@ -229,10 +229,8 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         heightPerMinute: heightPerMinute,
                         eventTileBuilder: eventTileBuilder,
                         scrollNotifier: scrollNotifier,
-                        width: width -
-                            timeLineWidth -
-                            hourIndicatorSettings.offset -
-                            verticalLineOffset,
+                        width: width - timeLineWidth - hourIndicatorSettings.offset - verticalLineOffset,
+                        minMax: minMax,
                       ),
                     ),
                     TimeLine(
@@ -244,6 +242,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                       showHalfHours: showHalfHours,
                       showQuarterHours: showQuarterHours,
                       key: ValueKey(heightPerMinute),
+                      minMax: minMax,
                     ),
                     if (showLiveLine && liveTimeIndicatorSettings.height > 0)
                       IgnorePointer(
@@ -253,6 +252,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                           height: height,
                           heightPerMinute: heightPerMinute,
                           timeLineWidth: timeLineWidth,
+                          minTime: minMax.min,
                         ),
                       ),
                   ],
