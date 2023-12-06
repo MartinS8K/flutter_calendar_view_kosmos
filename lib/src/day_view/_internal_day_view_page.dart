@@ -2,8 +2,6 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
-
-
 import 'package:flutter/material.dart';
 
 import '../components/_internal_components.dart';
@@ -164,6 +162,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               controller: scrollController,
+              physics: minMax.isFixed ? const NeverScrollableScrollPhysics() : null,
               child: Container(
                 width: width,
                 child: Stack(
@@ -187,29 +186,27 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                       CustomPaint(
                         size: Size(width, height),
                         painter: HalfHourLinePainter(
-                          lineColor: halfHourIndicatorSettings.color,
-                          lineHeight: halfHourIndicatorSettings.height,
-                          offset: timeLineWidth + halfHourIndicatorSettings.offset,
-                          minuteHeight: heightPerMinute,
-                          lineStyle: halfHourIndicatorSettings.lineStyle,
-                          dashWidth: halfHourIndicatorSettings.dashWidth,
-                          dashSpaceWidth: halfHourIndicatorSettings.dashSpaceWidth,
-                          minMax: minMax
-                        ),
+                            lineColor: halfHourIndicatorSettings.color,
+                            lineHeight: halfHourIndicatorSettings.height,
+                            offset: timeLineWidth + halfHourIndicatorSettings.offset,
+                            minuteHeight: heightPerMinute,
+                            lineStyle: halfHourIndicatorSettings.lineStyle,
+                            dashWidth: halfHourIndicatorSettings.dashWidth,
+                            dashSpaceWidth: halfHourIndicatorSettings.dashSpaceWidth,
+                            minMax: minMax),
                       ),
                     if (showQuarterHours)
                       CustomPaint(
                         size: Size(width, height),
                         painter: QuarterHourLinePainter(
-                          lineColor: quarterHourIndicatorSettings.color,
-                          lineHeight: quarterHourIndicatorSettings.height,
-                          offset: timeLineWidth + quarterHourIndicatorSettings.offset,
-                          minuteHeight: heightPerMinute,
-                          lineStyle: quarterHourIndicatorSettings.lineStyle,
-                          dashWidth: quarterHourIndicatorSettings.dashWidth,
-                          dashSpaceWidth: quarterHourIndicatorSettings.dashSpaceWidth,
-                          minMax: minMax
-                        ),
+                            lineColor: quarterHourIndicatorSettings.color,
+                            lineHeight: quarterHourIndicatorSettings.height,
+                            offset: timeLineWidth + quarterHourIndicatorSettings.offset,
+                            minuteHeight: heightPerMinute,
+                            lineStyle: quarterHourIndicatorSettings.lineStyle,
+                            dashWidth: quarterHourIndicatorSettings.dashWidth,
+                            dashSpaceWidth: quarterHourIndicatorSettings.dashSpaceWidth,
+                            minMax: minMax),
                       ),
                     dayDetectorBuilder(
                       width: width,
@@ -229,7 +226,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         heightPerMinute: heightPerMinute,
                         eventTileBuilder: eventTileBuilder,
                         scrollNotifier: scrollNotifier,
-                        width: width - timeLineWidth - hourIndicatorSettings.offset - verticalLineOffset,
+                        width: width - timeLineWidth - hourIndicatorSettings.offset - (showVerticalLine ? verticalLineOffset : 0),
                         minMax: minMax,
                       ),
                     ),
