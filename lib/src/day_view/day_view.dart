@@ -216,6 +216,11 @@ class DayView<T extends Object?> extends StatefulWidget {
   /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
   final MinMax minMax;
 
+
+  ///Define page controller if the user want to control the page view
+  final PageController? pageController;
+
+
   /// Main widget for day view.
   const DayView({
     Key? key,
@@ -262,6 +267,7 @@ class DayView<T extends Object?> extends StatefulWidget {
     this.onHeaderTitleTap,
     this.emulateVerticalOffsetBy = 0,
     this.minMax = const MinMax(),
+    this.pageController
   })  : assert(!(onHeaderTitleTap != null && dayTitleBuilder != null),
             "can't use [onHeaderTitleTap] & [dayTitleBuilder] simultaneously"),
         assert(timeLineOffset >= 0, "timeLineOffset must be greater than or equal to 0"),
@@ -335,7 +341,7 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
     _calculateHeights();
     _scrollController = ScrollController(
         initialScrollOffset: widget.scrollOffset ?? widget.startDuration.inMinutes * widget.heightPerMinute);
-    _pageController = PageController(initialPage: _currentIndex);
+    _pageController = widget.pageController ?? PageController(initialPage: _currentIndex);
     _eventArranger = widget.eventArranger ?? SideEventArranger<T>();
     _assignBuilders();
   }
