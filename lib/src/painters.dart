@@ -64,7 +64,7 @@ class HourLinePainter extends CustomPainter {
       ..color = lineColor
       ..strokeWidth = lineHeight;
 
-    for (var i = 1 + (minMax.min ?? 0); i < (minMax.max.addIsNonNull(1) ?? Constants.hoursADay); i++) {
+    for (var i = minMax.min ?? 0; i < (minMax.max.addIsNonNull(1) ?? Constants.hoursADay); i++) {
       final dy = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minMax.ajustementContainerSize / 2);
       if (lineStyle == LineStyle.dashed) {
         var startX = dx;
