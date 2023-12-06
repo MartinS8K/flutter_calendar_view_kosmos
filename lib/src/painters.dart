@@ -122,7 +122,7 @@ class HalfHourLinePainter extends CustomPainter {
   /// Line dash space width when using the [LineStyle.dashed] style
   final double dashSpaceWidth;
 
-    /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
+  /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
   final MinMax minMax;
 
   /// Paint half hour lines
@@ -290,6 +290,7 @@ class MinMax {
   final int? min;
   final int? max;
   final int ajustementContainerSize;
+  final bool isFixed;
 
-  const MinMax({this.min, this.max, this.ajustementContainerSize = 20});
+  const MinMax({this.min, this.max, this.ajustementContainerSize = 20, this.isFixed = false});
 }
