@@ -216,59 +216,65 @@ class DayView<T extends Object?> extends StatefulWidget {
   /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
   final MinMax minMax;
 
+  /// If true, the first and last hours will be displayed (12 am and 12 pm or 00:00 and 24:00)
+  final bool lastAndFirstHours;
 
   ///Define page controller if the user want to control the page view
   final PageController? pageController;
 
+  /// Defines the painter for the hour rect
+  final bool hourRectPainter;
 
   /// Main widget for day view.
-  const DayView({
-    Key? key,
-    this.eventTileBuilder,
-    this.dateStringBuilder,
-    this.timeStringBuilder,
-    this.controller,
-    this.showVerticalLine = true,
-    this.pageTransitionDuration = const Duration(milliseconds: 300),
-    this.pageTransitionCurve = Curves.ease,
-    this.width,
-    this.minDay,
-    this.maxDay,
-    this.initialDay,
-    this.hourIndicatorSettings,
-    this.hourLinePainter,
-    this.heightPerMinute = 0.7,
-    this.timeLineBuilder,
-    this.timeLineWidth,
-    this.timeLineOffset = 0,
-    this.showLiveTimeLineInAllDays = false,
-    this.liveTimeIndicatorSettings,
-    this.onPageChange,
-    this.dayTitleBuilder,
-    this.eventArranger,
-    this.verticalLineOffset = 10,
-    this.backgroundColor = Colors.white,
-    this.scrollOffset,
-    this.onEventTap,
-    this.onDateLongPress,
-    this.onDateTap,
-    this.minuteSlotSize = MinuteSlotSize.minutes60,
-    this.headerStyle = const HeaderStyle(),
-    this.fullDayEventBuilder,
-    this.safeAreaOption = const SafeAreaOption(),
-    this.scrollPhysics,
-    this.pageViewPhysics,
-    this.dayDetectorBuilder,
-    this.showHalfHours = false,
-    this.showQuarterHours = false,
-    this.halfHourIndicatorSettings,
-    this.quarterHourIndicatorSettings,
-    this.startDuration = const Duration(hours: 0),
-    this.onHeaderTitleTap,
-    this.emulateVerticalOffsetBy = 0,
-    this.minMax = const MinMax(),
-    this.pageController
-  })  : assert(!(onHeaderTitleTap != null && dayTitleBuilder != null),
+  const DayView(
+      {Key? key,
+      this.eventTileBuilder,
+      this.dateStringBuilder,
+      this.timeStringBuilder,
+      this.controller,
+      this.showVerticalLine = true,
+      this.pageTransitionDuration = const Duration(milliseconds: 300),
+      this.pageTransitionCurve = Curves.ease,
+      this.width,
+      this.minDay,
+      this.maxDay,
+      this.initialDay,
+      this.hourIndicatorSettings,
+      this.hourLinePainter,
+      this.heightPerMinute = 0.7,
+      this.timeLineBuilder,
+      this.timeLineWidth,
+      this.timeLineOffset = 0,
+      this.showLiveTimeLineInAllDays = false,
+      this.liveTimeIndicatorSettings,
+      this.onPageChange,
+      this.dayTitleBuilder,
+      this.eventArranger,
+      this.verticalLineOffset = 10,
+      this.backgroundColor = Colors.white,
+      this.scrollOffset,
+      this.onEventTap,
+      this.onDateLongPress,
+      this.onDateTap,
+      this.minuteSlotSize = MinuteSlotSize.minutes60,
+      this.headerStyle = const HeaderStyle(),
+      this.fullDayEventBuilder,
+      this.safeAreaOption = const SafeAreaOption(),
+      this.scrollPhysics,
+      this.pageViewPhysics,
+      this.dayDetectorBuilder,
+      this.showHalfHours = false,
+      this.showQuarterHours = false,
+      this.halfHourIndicatorSettings,
+      this.quarterHourIndicatorSettings,
+      this.startDuration = const Duration(hours: 0),
+      this.onHeaderTitleTap,
+      this.emulateVerticalOffsetBy = 0,
+      this.minMax = const MinMax(),
+      this.lastAndFirstHours = false,
+      this.hourRectPainter = false,
+      this.pageController})
+      : assert(!(onHeaderTitleTap != null && dayTitleBuilder != null),
             "can't use [onHeaderTitleTap] & [dayTitleBuilder] simultaneously"),
         assert(timeLineOffset >= 0, "timeLineOffset must be greater than or equal to 0"),
         assert(width == null || width > 0, "Calendar width must be greater than 0."),
@@ -463,6 +469,8 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
                             quarterHourIndicatorSettings: _quarterHourIndicatorSettings,
                             emulateVerticalOffsetBy: widget.emulateVerticalOffsetBy,
                             minMax: widget.minMax,
+                            lastAndFirstHours: widget.lastAndFirstHours,
+                            hourRectPainter: widget.hourRectPainter,
                           ),
                         );
                       },
@@ -543,8 +551,7 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
 
   void _calculateHeights() {
     _hourHeight = widget.heightPerMinute * 60;
-    _height = _hourHeight * ((widget.minMax.max ?? Constants.hoursADay) - (widget.minMax.min ?? 0)) +
-        widget.minMax.ajustementContainerSize;
+    _height = _hourHeight * ((widget.minMax.max ?? Constants.hoursADay) - (widget.minMax.min ?? 0));
   }
 
   void _assignBuilders() {

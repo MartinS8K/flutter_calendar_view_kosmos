@@ -129,6 +129,10 @@ class TimeLine extends StatelessWidget {
   /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
   final MinMax minMax;
 
+  //TODO
+  /// If true, the first and last hours will be displayed (12 am and 12 pm or 00:00 and 24:00)
+  final bool lastAndFirstHours;
+
   /// Time line to display time at left side of day or week view.
   const TimeLine({
     Key? key,
@@ -138,12 +142,16 @@ class TimeLine extends StatelessWidget {
     required this.timeLineOffset,
     required this.timeLineBuilder,
     required this.minMax,
+    this.lastAndFirstHours = false,
     this.showHalfHours = false,
     this.showQuarterHours = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    //TODO 
+    // int _lastAndFirstHours() => lastAndFirstHours ? 1 : 0;
+
     return ConstrainedBox(
       key: ValueKey(hourHeight),
       constraints: BoxConstraints(
@@ -154,19 +162,19 @@ class TimeLine extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          for (int i = minMax.min ?? 1; i < (minMax.max.addIsNonNull(1) ?? Constants.hoursADay); i++)
+          // for (int i = minMax.min ?? 0;
+          //     i < (minMax.max.addIsNonNull(_lastAndFirstHours(true)) ?? Constants.hoursADay + _lastAndFirstHours(true));
+          //     i++)
+          for (int i = minMax.min ?? 1; i < (minMax.max ?? Constants.hoursADay); i++)
             _timelinePositioned(
-              topPosition: hourHeight * (i - (minMax.min ?? 0)) - timeLineOffset + minMax.ajustementContainerSize / 2,
+              topPosition: (hourHeight * (i - (minMax.min ?? 0)) - timeLineOffset),
               bottomPosition: height - (hourHeight * (i + 1)) + timeLineOffset,
               hour: i,
             ),
           if (showHalfHours)
             for (int i = minMax.min ?? 0; i < (minMax.max ?? Constants.hoursADay); i++)
               _timelinePositioned(
-                topPosition: hourHeight * (i - (minMax.min ?? 0)) -
-                    timeLineOffset +
-                    _halfHourHeight +
-                    minMax.ajustementContainerSize / 2,
+                topPosition: hourHeight * (i - (minMax.min ?? 0)) - timeLineOffset + _halfHourHeight,
                 bottomPosition: height - (hourHeight * (i + 1)) + timeLineOffset,
                 hour: i,
                 minutes: 30,
@@ -175,18 +183,14 @@ class TimeLine extends StatelessWidget {
             for (int i = minMax.min ?? 0; i < (minMax.max ?? Constants.hoursADay); i++) ...[
               /// this is for 15 minutes
               _timelinePositioned(
-                topPosition: hourHeight * (i - (minMax.min ?? 0)) -
-                    timeLineOffset +
-                    hourHeight * 0.25 +
-                    minMax.ajustementContainerSize / 2,
+                topPosition: hourHeight * (i - (minMax.min ?? 0)) - timeLineOffset + hourHeight * 0.25,
                 bottomPosition: height - (hourHeight * (i + 1)) + timeLineOffset,
                 hour: i,
                 minutes: 15,
               ),
-
               /// this is for 45 minutes
               _timelinePositioned(
-                topPosition: hourHeight * i - timeLineOffset + hourHeight * 0.75 + minMax.ajustementContainerSize / 2,
+                topPosition: hourHeight * (i - (minMax.min ?? 0)) - timeLineOffset + hourHeight * 0.75,
                 bottomPosition: height - (hourHeight * (i + 1)) + timeLineOffset,
                 hour: i,
                 minutes: 45,
@@ -284,9 +288,9 @@ class EventGenerator<T extends Object?> extends StatelessWidget {
 
     return List.generate(events.length, (index) {
       return Positioned(
-        top: events[index].top - (((minMax.min ?? 0) * 60) * heightPerMinute) + (minMax.ajustementContainerSize / 2),
+        top: events[index].top - (((minMax.min ?? 0) * 60) * heightPerMinute),
         bottom:
-            events[index].bottom + (((minMax.min ?? 0) * 60) * heightPerMinute) - (minMax.ajustementContainerSize / 2),
+            events[index].bottom + (((minMax.min ?? 0) * 60) * heightPerMinute),
         left: events[index].left,
         right: events[index].right,
         child: GestureDetector(

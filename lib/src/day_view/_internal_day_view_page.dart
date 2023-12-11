@@ -115,6 +115,12 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
   /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
   final MinMax minMax;
 
+  /// If true, the first and last hours will be displayed (12 am and 12 pm or 00:00 and 24:00)
+  final bool lastAndFirstHours;
+
+  /// Defines the painter for the hour rect
+  final bool hourRectPainter;
+
   /// Defines a single day page.
   const InternalDayViewPage({
     Key? key,
@@ -149,11 +155,14 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
     required this.quarterHourIndicatorSettings,
     required this.emulateVerticalOffsetBy,
     required this.minMax,
+    required this.lastAndFirstHours,
+    required this.hourRectPainter,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final fullDayEventList = controller.getFullDayEvent(date);
+    final _height = height;
     return Container(
       width: width,
       child: Column(
@@ -167,24 +176,32 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                 width: width,
                 child: Stack(
                   children: [
-                    CustomPaint(
-                      size: Size(width, height),
-                      painter: hourLinePainter(
-                        hourIndicatorSettings.color,
-                        hourIndicatorSettings.height,
-                        timeLineWidth + hourIndicatorSettings.offset,
-                        heightPerMinute,
-                        showVerticalLine,
-                        verticalLineOffset,
-                        hourIndicatorSettings.lineStyle,
-                        hourIndicatorSettings.dashWidth,
-                        hourIndicatorSettings.dashSpaceWidth,
-                        emulateVerticalOffsetBy,
-                      ),
-                    ),
+                    hourRectPainter
+                        ? CustomPaint(
+                            size: Size(width, _height),
+                            painter: HourRectPainter(
+                              lineColor: hourIndicatorSettings.color,
+                              lineHeight: hourIndicatorSettings.height,
+                              minuteHeight: heightPerMinute,
+                              offset: timeLineWidth + hourIndicatorSettings.offset,
+                            ))
+                        : CustomPaint(
+                            size: Size(width, _height),
+                            painter: hourLinePainter(
+                              hourIndicatorSettings.color,
+                              hourIndicatorSettings.height,
+                              timeLineWidth + hourIndicatorSettings.offset,
+                              heightPerMinute,
+                              showVerticalLine,
+                              verticalLineOffset,
+                              hourIndicatorSettings.lineStyle,
+                              hourIndicatorSettings.dashWidth,
+                              hourIndicatorSettings.dashSpaceWidth,
+                              emulateVerticalOffsetBy,
+                            )),
                     if (showHalfHours)
                       CustomPaint(
-                        size: Size(width, height),
+                        size: Size(width, _height),
                         painter: HalfHourLinePainter(
                             lineColor: halfHourIndicatorSettings.color,
                             lineHeight: halfHourIndicatorSettings.height,
@@ -197,7 +214,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                       ),
                     if (showQuarterHours)
                       CustomPaint(
-                        size: Size(width, height),
+                        size: Size(width, _height),
                         painter: QuarterHourLinePainter(
                             lineColor: quarterHourIndicatorSettings.color,
                             lineHeight: quarterHourIndicatorSettings.height,
@@ -210,7 +227,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                       ),
                     dayDetectorBuilder(
                       width: width,
-                      height: height,
+                      height: _height,
                       heightPerMinute: heightPerMinute,
                       date: date,
                       minuteSlotSize: minuteSlotSize,
@@ -218,7 +235,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerRight,
                       child: EventGenerator<T>(
-                        height: height,
+                        height: _height,
                         date: date,
                         onTileTap: onTileTap,
                         eventArranger: eventArranger,
@@ -226,12 +243,15 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         heightPerMinute: heightPerMinute,
                         eventTileBuilder: eventTileBuilder,
                         scrollNotifier: scrollNotifier,
-                        width: width - timeLineWidth - hourIndicatorSettings.offset - (showVerticalLine ? verticalLineOffset : 0),
+                        width: width -
+                            timeLineWidth -
+                            hourIndicatorSettings.offset -
+                            (showVerticalLine ? verticalLineOffset : 0),
                         minMax: minMax,
                       ),
                     ),
                     TimeLine(
-                      height: height,
+                      height: _height,
                       hourHeight: hourHeight,
                       timeLineBuilder: timeLineBuilder,
                       timeLineOffset: timeLineOffset,
@@ -240,13 +260,14 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                       showQuarterHours: showQuarterHours,
                       key: ValueKey(heightPerMinute),
                       minMax: minMax,
+                      lastAndFirstHours: lastAndFirstHours,
                     ),
                     if (showLiveLine && liveTimeIndicatorSettings.height > 0)
                       IgnorePointer(
                         child: LiveTimeIndicator(
                           liveTimeIndicatorSettings: liveTimeIndicatorSettings,
                           width: width,
-                          height: height,
+                          height: _height,
                           heightPerMinute: heightPerMinute,
                           timeLineWidth: timeLineWidth,
                           minTime: minMax.min,

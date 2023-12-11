@@ -3,9 +3,9 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import '../calendar_view.dart';
 import 'constants.dart';
 import 'enumerations.dart';
-import 'extensions.dart';
 
 /// Paints 24 hour lines.
 class HourLinePainter extends CustomPainter {
@@ -64,8 +64,8 @@ class HourLinePainter extends CustomPainter {
       ..color = lineColor
       ..strokeWidth = lineHeight;
 
-    for (var i = minMax.min ?? 0; i < (minMax.max.addIsNonNull(1) ?? Constants.hoursADay); i++) {
-      final dy = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minMax.ajustementContainerSize / 2);
+    for (var i = 0; i < (minMax.difference ?? Constants.hoursADay); i++) {
+      final dy = i * minuteHeight * 60;
       if (lineStyle == LineStyle.dashed) {
         var startX = dx;
         while (startX < size.width) {
@@ -144,7 +144,7 @@ class HalfHourLinePainter extends CustomPainter {
       ..strokeWidth = lineHeight;
 
     for (var i = 0 + (minMax.min ?? 0); i < (minMax.max ?? Constants.hoursADay); i++) {
-      final dy = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minuteHeight * 30) + (minMax.ajustementContainerSize / 2);
+      final dy = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minuteHeight * 30);
       if (lineStyle == LineStyle.dashed) {
         var startX = offset;
         while (startX < size.width) {
@@ -152,7 +152,7 @@ class HalfHourLinePainter extends CustomPainter {
           startX += dashWidth + dashSpaceWidth;
         }
       } else {
-        canvas.drawLine(Offset(offset, dy), Offset(size.width, dy), paint);
+        // canvas.drawLine(Offset(offset, dy), Offset(size.width, dy), paint);
       }
     }
   }
@@ -225,8 +225,8 @@ class QuarterHourLinePainter extends CustomPainter {
           startX += dashWidth + dashSpaceWidth;
         }
       } else {
-        canvas.drawLine(Offset(offset, dy1), Offset(size.width, dy1), paint);
-        canvas.drawLine(Offset(offset, dy2), Offset(size.width, dy2), paint);
+        // canvas.drawLine(Offset(offset, dy1), Offset(size.width, dy1), paint);
+        // canvas.drawLine(Offset(offset, dy2), Offset(size.width, dy2), paint);
       }
     }
   }
@@ -286,11 +286,71 @@ class CurrentTimeLinePainter extends CustomPainter {
       (color != oldDelegate.color || height != oldDelegate.height || offset != oldDelegate.offset);
 }
 
+class HourRectPainter extends CustomPainter {
+  /// Color of hour line
+  final Color lineColor;
+
+  /// Height of hour line
+  final double lineHeight;
+
+  /// Offset of hour line from left.
+  final double offset;
+
+  /// Height occupied by one minute of time stamp.
+  final double minuteHeight;
+
+  /// Defines the maximum, minimum Hour time display in day view and ajust the size of the big container.
+  final MinMax minMax;
+
+  /// Define distance between rect.
+  final double distanceBetweenRect;
+
+  /// Paints 24 hour lines.
+  HourRectPainter({
+    required this.lineColor,
+    required this.lineHeight,
+    required this.minuteHeight,
+    required this.offset,
+    this.distanceBetweenRect = 2.5,
+    this.minMax = const MinMax(),
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = lineColor
+      ..strokeWidth = lineHeight;
+
+    for (var i = 0; i < (minMax.difference ?? Constants.hoursADay); i++) {
+      final dy = i * minuteHeight * 60;
+      RRect roundedRect = RRect.fromRectAndRadius(
+          Rect.fromLTWH(offset, dy + distanceBetweenRect, size.width, (60 * minuteHeight) - distanceBetweenRect * 2), Radius.circular(7));
+      canvas.drawRRect(roundedRect, paint..style = PaintingStyle.stroke);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return oldDelegate is HourRectPainter &&
+        (oldDelegate.lineColor != lineColor ||
+            oldDelegate.offset != offset ||
+            lineHeight != oldDelegate.lineHeight ||
+            minuteHeight != oldDelegate.minuteHeight);
+  }
+}
+
 class MinMax {
   final int? min;
   final int? max;
-  final int ajustementContainerSize;
   final bool isFixed;
 
-  const MinMax({this.min, this.max, this.ajustementContainerSize = 20, this.isFixed = false});
+  int? get difference {
+    if (max != null && min != null) {
+      return max! - min!;
+    } else {
+      return null;
+    }
+  }
+
+  const MinMax({this.min, this.max, this.isFixed = false});
 }
