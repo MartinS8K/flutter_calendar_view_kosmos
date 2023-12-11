@@ -121,6 +121,9 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
   /// Defines the painter for the hour rect
   final bool hourRectPainter;
 
+  /// Define distance between rect.
+  final double distanceBetweenRect;
+
   /// Defines a single day page.
   const InternalDayViewPage({
     Key? key,
@@ -157,6 +160,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
     required this.minMax,
     required this.lastAndFirstHours,
     required this.hourRectPainter,
+    required this.distanceBetweenRect,
   }) : super(key: key);
 
   @override
@@ -248,7 +252,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         width: width -
                             timeLineWidth -
                             hourIndicatorSettings.offset -
-                            (showVerticalLine ? verticalLineOffset : 0),
+                            (showVerticalLine ? verticalLineOffset : - distanceBetweenRect),
                         minMax: minMax,
                       ),
                     ),

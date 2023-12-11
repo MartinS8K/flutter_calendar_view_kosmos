@@ -331,21 +331,21 @@ class HourRectPainter extends CustomPainter {
       ..strokeWidth = lineHeight;
 
     if (minuteSlotSize == MinuteSlotSize.minutes30)
-    for (var i = minMax.min ?? 0; i < (minMax.max ?? Constants.hoursADay); i++) {
-      final dy = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minuteHeight * 30);
+      for (var i = minMax.min ?? 0; i < (minMax.max ?? Constants.hoursADay); i++) {
+        final dy = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minuteHeight * 30);
 
-      RRect roundedRect = RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-              offset, dy + distanceBetweenRect, size.width, (minutes * minuteHeight) - distanceBetweenRect * 2),
-          Radius.circular(7));
-      canvas.drawRRect(roundedRect, paint..style = PaintingStyle.stroke);
-    }
+        RRect roundedRect = RRect.fromRectAndRadius(
+            Rect.fromLTWH(offset, dy + distanceBetweenRect, size.width - (offset + (distanceBetweenRect * 2)),
+                (minutes * minuteHeight) - distanceBetweenRect * 2),
+            Radius.circular(7));
+        canvas.drawRRect(roundedRect, paint..style = PaintingStyle.stroke);
+      }
 
     for (var i = 0; i < (minMax.difference ?? Constants.hoursADay); i++) {
       final dy = i * minuteHeight * 60;
       RRect roundedRect = RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-              offset, dy + distanceBetweenRect, size.width, (minutes * minuteHeight) - distanceBetweenRect * 2),
+          Rect.fromLTWH(offset, dy + distanceBetweenRect, size.width - (offset + (distanceBetweenRect * 2)),
+              (minutes * minuteHeight) - distanceBetweenRect * 2),
           Radius.circular(7));
       canvas.drawRRect(roundedRect, paint..style = PaintingStyle.stroke);
     }
