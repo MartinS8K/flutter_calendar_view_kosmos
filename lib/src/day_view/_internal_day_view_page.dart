@@ -184,6 +184,8 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                               lineHeight: hourIndicatorSettings.height,
                               minuteHeight: heightPerMinute,
                               offset: timeLineWidth + hourIndicatorSettings.offset,
+                              minuteSlotSize: minuteSlotSize,
+                              minMax: minMax,
                             ))
                         : CustomPaint(
                             size: Size(width, _height),
@@ -199,7 +201,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                               hourIndicatorSettings.dashSpaceWidth,
                               emulateVerticalOffsetBy,
                             )),
-                    if (showHalfHours)
+                    if (showHalfHours && !hourRectPainter)
                       CustomPaint(
                         size: Size(width, _height),
                         painter: HalfHourLinePainter(
@@ -212,7 +214,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                             dashSpaceWidth: halfHourIndicatorSettings.dashSpaceWidth,
                             minMax: minMax),
                       ),
-                    if (showQuarterHours)
+                    if (showQuarterHours && !hourRectPainter)
                       CustomPaint(
                         size: Size(width, _height),
                         painter: QuarterHourLinePainter(
