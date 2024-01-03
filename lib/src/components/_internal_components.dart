@@ -149,7 +149,7 @@ class TimeLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //TODO 
+    //TODO
     // int _lastAndFirstHours() => lastAndFirstHours ? 1 : 0;
 
     return ConstrainedBox(
@@ -289,8 +289,7 @@ class EventGenerator<T extends Object?> extends StatelessWidget {
     return List.generate(events.length, (index) {
       return Positioned(
         top: events[index].top - (((minMax.min ?? 0) * 60) * heightPerMinute),
-        bottom:
-            events[index].bottom + (((minMax.min ?? 0) * 60) * heightPerMinute),
+        bottom: events[index].bottom + (((minMax.min ?? 0) * 60) * heightPerMinute),
         left: events[index].left,
         right: events[index].right,
         child: GestureDetector(

@@ -124,6 +124,10 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
   /// Define distance between rect.
   final double distanceBetweenRect;
 
+  /// Show timeLine
+  final bool showTimeLine;
+
+
   /// Defines a single day page.
   const InternalDayViewPage({
     Key? key,
@@ -161,6 +165,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
     required this.lastAndFirstHours,
     required this.hourRectPainter,
     required this.distanceBetweenRect,
+    required this.showTimeLine,
   }) : super(key: key);
 
   @override
@@ -187,7 +192,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                               lineColor: hourIndicatorSettings.color,
                               lineHeight: hourIndicatorSettings.height,
                               minuteHeight: heightPerMinute,
-                              offset: timeLineWidth + hourIndicatorSettings.offset,
+                              offset: (showTimeLine ? timeLineWidth : 0) + hourIndicatorSettings.offset,
                               minuteSlotSize: minuteSlotSize,
                               minMax: minMax,
                             ))
@@ -196,7 +201,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                             painter: hourLinePainter(
                               hourIndicatorSettings.color,
                               hourIndicatorSettings.height,
-                              timeLineWidth + hourIndicatorSettings.offset,
+                              (showTimeLine ? timeLineWidth : 0) + hourIndicatorSettings.offset,
                               heightPerMinute,
                               showVerticalLine,
                               verticalLineOffset,
@@ -211,7 +216,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         painter: HalfHourLinePainter(
                             lineColor: halfHourIndicatorSettings.color,
                             lineHeight: halfHourIndicatorSettings.height,
-                            offset: timeLineWidth + halfHourIndicatorSettings.offset,
+                            offset: (showTimeLine ? timeLineWidth : 0) + halfHourIndicatorSettings.offset,
                             minuteHeight: heightPerMinute,
                             lineStyle: halfHourIndicatorSettings.lineStyle,
                             dashWidth: halfHourIndicatorSettings.dashWidth,
@@ -224,7 +229,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         painter: QuarterHourLinePainter(
                             lineColor: quarterHourIndicatorSettings.color,
                             lineHeight: quarterHourIndicatorSettings.height,
-                            offset: timeLineWidth + quarterHourIndicatorSettings.offset,
+                            offset: (showTimeLine ? timeLineWidth : 0) + quarterHourIndicatorSettings.offset,
                             minuteHeight: heightPerMinute,
                             lineStyle: quarterHourIndicatorSettings.lineStyle,
                             dashWidth: quarterHourIndicatorSettings.dashWidth,
@@ -250,12 +255,13 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         eventTileBuilder: eventTileBuilder,
                         scrollNotifier: scrollNotifier,
                         width: width -
-                            timeLineWidth -
+                            (showTimeLine ? timeLineWidth : 0) -
                             hourIndicatorSettings.offset -
                             (showVerticalLine ? verticalLineOffset : - distanceBetweenRect),
                         minMax: minMax,
                       ),
                     ),
+                    if (showTimeLine)
                     TimeLine(
                       height: _height,
                       hourHeight: hourHeight,
@@ -275,7 +281,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                           width: width,
                           height: _height,
                           heightPerMinute: heightPerMinute,
-                          timeLineWidth: timeLineWidth,
+                          timeLineWidth: (showTimeLine ? timeLineWidth : 0),
                           minTime: minMax.min,
                         ),
                       ),

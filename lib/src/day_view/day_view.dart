@@ -228,6 +228,9 @@ class DayView<T extends Object?> extends StatefulWidget {
   /// Define distance between rect.
   final double distanceBetweenRect;
 
+  /// Show timeLine
+  final bool showTimeLine;
+
   /// Main widget for day view.
   const DayView(
       {Key? key,
@@ -277,7 +280,8 @@ class DayView<T extends Object?> extends StatefulWidget {
       this.lastAndFirstHours = false,
       this.hourRectPainter = false,
       this.pageController,
-      this.distanceBetweenRect = 2.5})
+      this.distanceBetweenRect = 2.5,
+      this.showTimeLine = true})
       : assert(!(onHeaderTitleTap != null && dayTitleBuilder != null),
             "can't use [onHeaderTitleTap] & [dayTitleBuilder] simultaneously"),
         assert(timeLineOffset >= 0, "timeLineOffset must be greater than or equal to 0"),
@@ -476,6 +480,7 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
                             lastAndFirstHours: widget.lastAndFirstHours,
                             hourRectPainter: widget.hourRectPainter,
                             distanceBetweenRect: widget.distanceBetweenRect,
+                            showTimeLine: widget.showTimeLine,
                           ),
                         );
                       },
