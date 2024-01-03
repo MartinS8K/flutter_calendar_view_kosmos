@@ -290,7 +290,7 @@ class EventGenerator<T extends Object?> extends StatelessWidget {
       return Positioned(
         top: events[index].top - (((minMax.min ?? 0) * 60) * heightPerMinute),
         bottom: events[index].bottom + (((minMax.min ?? 0) * 60) * heightPerMinute),
-        left: events[index].left - 1,
+        left: events[index].left - 3,
         right: events[index].right,
         child: GestureDetector(
           onTap: () => onTileTap?.call(events[index].events, date),
