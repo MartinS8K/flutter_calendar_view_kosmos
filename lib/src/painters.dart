@@ -286,7 +286,7 @@ class CurrentTimeLinePainter extends CustomPainter {
       (color != oldDelegate.color || height != oldDelegate.height || offset != oldDelegate.offset);
 }
 
-class HourRectPainter extends CustomPainter {
+class HourRectPainter<T> extends CustomPainter {
   /// Color of hour line
   final Color lineColor;
 
@@ -308,19 +308,25 @@ class HourRectPainter extends CustomPainter {
   ///
   final MinuteSlotSize minuteSlotSize;
 
+  final EventController<T> controller;
+
+  final DateTime currentDate;
+
   /// Paints 24 hour rect.
-  HourRectPainter({
-    required this.lineColor,
-    required this.lineHeight,
-    required this.minuteHeight,
-    required this.offset,
-    this.minuteSlotSize = MinuteSlotSize.minutes60,
-    this.distanceBetweenRect = 2.5,
-    this.minMax = const MinMax(),
-  });
+  HourRectPainter(
+      {required this.lineColor,
+      required this.lineHeight,
+      required this.minuteHeight,
+      required this.offset,
+      this.minuteSlotSize = MinuteSlotSize.minutes60,
+      this.distanceBetweenRect = 2.5,
+      this.minMax = const MinMax(),
+      required this.controller,
+      required this.currentDate});
 
   @override
   void paint(Canvas canvas, Size size) {
+    var eventDoubles = controller.getEventsIntOnDay(currentDate);
     int minutes = minuteSlotSize == MinuteSlotSize.minutes15
         ? 15
         : minuteSlotSize == MinuteSlotSize.minutes30
@@ -332,22 +338,25 @@ class HourRectPainter extends CustomPainter {
 
     if (minuteSlotSize == MinuteSlotSize.minutes30)
       for (var i = minMax.min ?? 0; i < (minMax.max ?? Constants.hoursADay); i++) {
-        final dy = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minuteHeight * 30);
+        if (!eventDoubles.contains((i.toDouble() + 0.5)))
+        {final dy = (i - (minMax.min ?? 0)) * minuteHeight * 60 + (minuteHeight * 30);
 
+        RRect roundedRect = RRect.fromRectAndRadius(
+            Rect.fromLTWH(offset, dy + distanceBetweenRect, size.width - (offset + (distanceBetweenRect * 2)),
+                (minutes * minuteHeight) - distanceBetweenRect * 2),
+            Radius.circular(7));
+        canvas.drawRRect(roundedRect, paint..style = PaintingStyle.stroke);}
+      }
+
+    for (var i = 0; i < (minMax.difference ?? Constants.hoursADay); i++) {
+      if (!eventDoubles.contains(i + minMax.min!)) {
+        final dy = i * minuteHeight * 60;
         RRect roundedRect = RRect.fromRectAndRadius(
             Rect.fromLTWH(offset, dy + distanceBetweenRect, size.width - (offset + (distanceBetweenRect * 2)),
                 (minutes * minuteHeight) - distanceBetweenRect * 2),
             Radius.circular(7));
         canvas.drawRRect(roundedRect, paint..style = PaintingStyle.stroke);
       }
-
-    for (var i = 0; i < (minMax.difference ?? Constants.hoursADay); i++) {
-      final dy = i * minuteHeight * 60;
-      RRect roundedRect = RRect.fromRectAndRadius(
-          Rect.fromLTWH(offset, dy + distanceBetweenRect, size.width - (offset + (distanceBetweenRect * 2)),
-              (minutes * minuteHeight) - distanceBetweenRect * 2),
-          Radius.circular(7));
-      canvas.drawRRect(roundedRect, paint..style = PaintingStyle.stroke);
     }
   }
 

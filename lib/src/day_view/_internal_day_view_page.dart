@@ -188,13 +188,15 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                     hourRectPainter
                         ? CustomPaint(
                             size: Size(width, _height),
-                            painter: HourRectPainter(
+                            painter: HourRectPainter<T>(
                               lineColor: hourIndicatorSettings.color,
                               lineHeight: hourIndicatorSettings.height,
                               minuteHeight: heightPerMinute,
                               offset: (showTimeLine ? timeLineWidth : 0) + hourIndicatorSettings.offset,
                               minuteSlotSize: minuteSlotSize,
                               minMax: minMax,
+                              controller: controller,
+                              currentDate: date
                             ))
                         : CustomPaint(
                             size: Size(width, _height),
@@ -254,9 +256,9 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         heightPerMinute: heightPerMinute,
                         eventTileBuilder: eventTileBuilder,
                         scrollNotifier: scrollNotifier,
-                        width: width -
-                            (showTimeLine ? timeLineWidth : 0) -
-                            hourIndicatorSettings.offset -
+                        width: width
+                        - (showTimeLine ? timeLineWidth : 0)
+                        - hourIndicatorSettings.offset -
                             (showVerticalLine ? verticalLineOffset : - distanceBetweenRect),
                         minMax: minMax,
                       ),

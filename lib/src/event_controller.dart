@@ -40,8 +40,7 @@ class EventController<T extends Object?> extends ChangeNotifier {
   // Note: Do not use this getter inside of EventController class.
   // use _eventList instead.
   /// Returns list of [CalendarEventData<T>] stored in this controller.
-  List<CalendarEventData<T>> get events =>
-      _calendarData.eventList.toList(growable: false);
+  List<CalendarEventData<T>> get events => _calendarData.eventList.toList(growable: false);
 
   /// This method will provide list of events on particular date.
   ///
@@ -105,6 +104,22 @@ class EventController<T extends Object?> extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Returns int when rdv
+  ///
+  /// To not drawing rect when they are rdv
+  List<double> getEventsIntOnDay(DateTime date) {
+    List<CalendarEventData<T>> events = getEventsOnDay(date);
+    List<double> tmp = [];
+
+    events.forEach((element) {
+      tmp.addAll(generateDoubleList(element.startTime!, element.endTime!));
+    });
+
+    tmp = tmp.toSet().toList();
+
+    return tmp;
+  }
+
   /// Returns events on given day.
   ///
   /// To overwrite default behaviour of this function,
@@ -121,8 +136,7 @@ class EventController<T extends Object?> extends ChangeNotifier {
     for (final rangingEvent in _calendarData.rangingEventList) {
       if (date == rangingEvent.date ||
           date == rangingEvent.endDate ||
-          (date.isBefore(rangingEvent.endDate) &&
-              date.isAfter(rangingEvent.date))) {
+          (date.isBefore(rangingEvent.endDate) && date.isAfter(rangingEvent.date))) {
         events.add(rangingEvent);
       }
     }
@@ -136,8 +150,7 @@ class EventController<T extends Object?> extends ChangeNotifier {
   List<CalendarEventData<T>> getFullDayEvent(DateTime dateTime) {
     final events = <CalendarEventData<T>>[];
     for (final event in _calendarData.fullDayEventList) {
-      if (dateTime.difference(event.date).inDays >= 0 &&
-          event.endDate.difference(dateTime).inDays > 0) {
+      if (dateTime.difference(event.date).inDays >= 0 && event.endDate.difference(dateTime).inDays > 0) {
         events.add(event);
       }
     }
@@ -155,8 +168,7 @@ class EventController<T extends Object?> extends ChangeNotifier {
 
   //#region Private Methods
   void _addEvent(CalendarEventData<T> event) {
-    assert(event.endDate.difference(event.date).inDays >= 0,
-        'The end date must be greater or equal to the start date');
+    assert(event.endDate.difference(event.date).inDays >= 0, 'The end date must be greater or equal to the start date');
     if (_calendarData.eventList.contains(event)) return;
     if (event.endDate.difference(event.date).inDays > 0) {
       if (event.startTime!.isDayStart && event.endTime!.isDayStart) {
@@ -199,4 +211,13 @@ class CalendarData<T> {
 
   // Stores all full day events(24hr event)
   final fullDayEventList = <CalendarEventData<T>>[];
+}
+
+List<double> generateDoubleList(DateTime start, DateTime end) {
+  List<double> doublesList = [];
+  while (start.isBefore(end) || start.isAtSameMomentAs(end)) {
+    doublesList.add((end.hour + start.minute / 60) - 1.0);
+    start = start.add(Duration(minutes: 30));
+  }
+  return doublesList;
 }
