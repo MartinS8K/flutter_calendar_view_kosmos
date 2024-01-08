@@ -5,7 +5,6 @@
 import 'package:flutter/material.dart';
 import '../calendar_view.dart';
 import 'constants.dart';
-import 'enumerations.dart';
 
 /// Paints 24 hour lines.
 class HourLinePainter extends CustomPainter {
