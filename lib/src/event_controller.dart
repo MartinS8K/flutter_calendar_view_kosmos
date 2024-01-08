@@ -215,8 +215,9 @@ class CalendarData<T> {
 
 List<double> generateDoubleList(DateTime start, DateTime end) {
   List<double> doublesList = [];
-  while (start.isBefore(end) || start.isAtSameMomentAs(end)) {
-    doublesList.add((end.hour + start.minute / 60) - 1.0);
+
+  while (start.isBefore(end)) {
+    doublesList.add(double.parse('${start.hour}.${start.minute == 30 ? 5 : 0}'));
     start = start.add(Duration(minutes: 30));
   }
   return doublesList;
