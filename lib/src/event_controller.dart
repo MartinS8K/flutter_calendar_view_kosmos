@@ -112,6 +112,7 @@ class EventController<T extends Object?> extends ChangeNotifier {
     List<double> tmp = [];
 
     events.forEach((element) {
+      print(generateDoubleList(element.startTime!, element.endTime!));
       tmp.addAll(generateDoubleList(element.startTime!, element.endTime!));
     });
 
