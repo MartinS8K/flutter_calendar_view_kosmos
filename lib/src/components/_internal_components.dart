@@ -165,9 +165,9 @@ class TimeLine extends StatelessWidget {
           // for (int i = minMax.min ?? 0;
           //     i < (minMax.max.addIsNonNull(_lastAndFirstHours(true)) ?? Constants.hoursADay + _lastAndFirstHours(true));
           //     i++)
-          for (int i = minMax.min ?? 1; i < (minMax.max ?? Constants.hoursADay); i++)
+          for (int i = minMax.min ?? 1; i <= (minMax.max ?? Constants.hoursADay); i++)
             _timelinePositioned(
-              topPosition: (hourHeight * (i - (minMax.min ?? 0)) - timeLineOffset),
+              topPosition: i == (minMax.min ?? 1) ? 4 + (hourHeight * (i - (minMax.min ?? 0)) - timeLineOffset) : (hourHeight * (i - (minMax.min ?? 0)) - timeLineOffset),
               bottomPosition: height - (hourHeight * (i + 1)) + timeLineOffset,
               hour: i,
             ),

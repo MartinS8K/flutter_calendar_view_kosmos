@@ -127,7 +127,6 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
   /// Show timeLine
   final bool showTimeLine;
 
-
   /// Defines a single day page.
   const InternalDayViewPage({
     Key? key,
@@ -171,7 +170,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fullDayEventList = controller.getFullDayEvent(date);
-    final _height = height;
+    final _height = height + 20;
     return Container(
       width: width,
       child: Column(
@@ -189,15 +188,14 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         ? CustomPaint(
                             size: Size(width, _height),
                             painter: HourRectPainter<T>(
-                              lineColor: hourIndicatorSettings.color,
-                              lineHeight: hourIndicatorSettings.height,
-                              minuteHeight: heightPerMinute,
-                              offset: (showTimeLine ? timeLineWidth : 0) + hourIndicatorSettings.offset,
-                              minuteSlotSize: minuteSlotSize,
-                              minMax: minMax,
-                              controller: controller,
-                              currentDate: date
-                            ))
+                                lineColor: hourIndicatorSettings.color,
+                                lineHeight: hourIndicatorSettings.height,
+                                minuteHeight: heightPerMinute,
+                                offset: (showTimeLine ? timeLineWidth : 0) + hourIndicatorSettings.offset,
+                                minuteSlotSize: minuteSlotSize,
+                                minMax: minMax,
+                                controller: controller,
+                                currentDate: date))
                         : CustomPaint(
                             size: Size(width, _height),
                             painter: hourLinePainter(
@@ -256,26 +254,26 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                         heightPerMinute: heightPerMinute,
                         eventTileBuilder: eventTileBuilder,
                         scrollNotifier: scrollNotifier,
-                        width: width
-                        - (showTimeLine ? timeLineWidth : 0)
-                        - hourIndicatorSettings.offset -
+                        width: width -
+                            (showTimeLine ? timeLineWidth : 0) -
+                            hourIndicatorSettings.offset -
                             (showVerticalLine ? verticalLineOffset : - distanceBetweenRect),
                         minMax: minMax,
                       ),
                     ),
                     if (showTimeLine)
-                    TimeLine(
-                      height: _height,
-                      hourHeight: hourHeight,
-                      timeLineBuilder: timeLineBuilder,
-                      timeLineOffset: timeLineOffset,
-                      timeLineWidth: timeLineWidth,
-                      showHalfHours: showHalfHours,
-                      showQuarterHours: showQuarterHours,
-                      key: ValueKey(heightPerMinute),
-                      minMax: minMax,
-                      lastAndFirstHours: lastAndFirstHours,
-                    ),
+                      TimeLine(
+                        height: _height,
+                        hourHeight: hourHeight,
+                        timeLineBuilder: timeLineBuilder,
+                        timeLineOffset: timeLineOffset,
+                        timeLineWidth: timeLineWidth,
+                        showHalfHours: showHalfHours,
+                        showQuarterHours: showQuarterHours,
+                        key: ValueKey(heightPerMinute),
+                        minMax: minMax,
+                        lastAndFirstHours: lastAndFirstHours,
+                      ),
                     if (showLiveLine && liveTimeIndicatorSettings.height > 0)
                       IgnorePointer(
                         child: LiveTimeIndicator(
