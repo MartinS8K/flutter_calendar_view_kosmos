@@ -411,7 +411,8 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
   @override
   void dispose() {
     _controller?.removeListener(_reloadCallback);
-    _pageController.dispose();
+    //TODO maybe Auto.router().isMounted
+    // _pageController.dispose();
     super.dispose();
   }
 
